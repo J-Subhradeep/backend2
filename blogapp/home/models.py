@@ -8,3 +8,4 @@ class BlogPost(models.Model):
     desc = models.CharField(max_length=1000)
     owner_name = models.CharField(max_length=25)
     date = models.DateField(auto_now_add=True)
+    type = models.CharField(max_length=1000)
