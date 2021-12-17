@@ -13,18 +13,20 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 class UserView(APIView):
     def get(self, request, pk=None, format=None):
-        queryset = User.objects.values('username', 'id')
-        return Response(queryset, status=status.HTTP_200_OK)
+        queryset = User.objects.all()
+        serializers = UserSerializer(queryset, many=True)
+
+        return Response(serializers.data, status=status.HTTP_200_OK)
 
     def post(self, request, format=None):
         data = request.data
-        # username = data.get('username')
-        # password = data.get('password')
-        # email = data.get('email')
+        username = data.get('username')
+        password = data.get('password')
+        email = data.get('email')
         serializers = UserSerializer(data=data, partial=True)
-        # user = User.objects.create_user(username, email, password)
         if serializers.is_valid():
-            serializers.save()
+            user = User.objects.create_user(username, email, password)
+
             return Response(serializers.data)
         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
