@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from .models import BlogPost
 from django.contrib.auth.models import User
 from rest_framework import status
-from .serializers import BlogPostSerializer
+from .serializers import BlogPostSerializer, UserSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
@@ -18,15 +18,15 @@ class UserView(APIView):
 
     def post(self, request, format=None):
         data = request.data
-        username = data.get('username')
-        password = data.get('password')
-        email = data.get('email')
-
-        user = User.objects.create_user(username, email, password)
-
-        return Response({
-            'message': 'OK'
-        })
+        # username = data.get('username')
+        # password = data.get('password')
+        # email = data.get('email')
+        serializers = UserSerializer(data=data, partial=True)
+        # user = User.objects.create_user(username, email, password)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data)
+        return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class BlogPostApi(viewsets.ModelViewSet):
@@ -34,4 +34,3 @@ class BlogPostApi(viewsets.ModelViewSet):
     serializer_class = BlogPostSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly]
-    
