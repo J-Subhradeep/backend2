@@ -1,22 +1,20 @@
 from django.shortcuts import render
 from rest_framework import response
 from rest_framework.views import APIView
+from rest_framework import viewsets
 from rest_framework.response import Response
 from .models import BlogPost
 from django.contrib.auth.models import User
 from rest_framework import status
 from .serializers import BlogPostSerializer
-# Create your views here.
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
-#harry: ##HHHH@12345
 
 class UserView(APIView):
     def get(self, request, pk=None, format=None):
-        blg = BlogPost.objects.all()
-        if pk:
-            blg = BlogPost.objects.get(pk=pk)
-        serializers = BlogPostSerializer(blg, many=True)
-        return Response(serializers.data, status=status.HTTP_200_OK)
+        queryset = User.objects.values('username', 'id')
+        return Response(queryset, status=status.HTTP_200_OK)
 
     def post(self, request, format=None):
         data = request.data
@@ -28,4 +26,12 @@ class UserView(APIView):
 
         return Response({
             'message': 'OK'
-        })        
+        })
+
+
+class BlogPostApi(viewsets.ModelViewSet):
+    queryset = BlogPost.objects.all()
+    serializer_class = BlogPostSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    
