@@ -9,6 +9,8 @@ from rest_framework import status
 from .serializers import BlogPostSerializer, UserSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 
 class UserView(APIView):
@@ -18,6 +20,7 @@ class UserView(APIView):
 
         return Response(serializers.data, status=status.HTTP_200_OK)
 
+    @method_decorator(csrf_exempt)
     def post(self, request, format=None):
         data = request.data
         username = data.get('username')
