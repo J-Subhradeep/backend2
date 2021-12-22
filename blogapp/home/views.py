@@ -15,12 +15,15 @@ from django.utils.decorators import method_decorator
 
 class UserView(APIView):
     def get(self, request, pk=None, format=None):
+        print(request.data)
         queryset = User.objects.all()
+        if request.data.get('username'):
+            queryset = User.objects.filter(
+                username=request.data.get('username'))
         serializers = UserSerializer(queryset, many=True)
 
         return Response(serializers.data, status=status.HTTP_200_OK)
 
-    @method_decorator(csrf_exempt)
     def post(self, request, format=None):
         data = request.data
         username = data.get('username')
@@ -31,7 +34,7 @@ class UserView(APIView):
             user = User.objects.create_user(username, email, password)
 
             return Response(serializers.data)
-        return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': True, 'msg': serializers.errors})
 
 
 class BlogPostApi(viewsets.ModelViewSet):
@@ -39,3 +42,15 @@ class BlogPostApi(viewsets.ModelViewSet):
     serializer_class = BlogPostSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+
+class UserGet(APIView):
+    def post(self, request, format=None):
+        print(request.data)
+        queryset = User.objects.all()
+        if request.data.get('username'):
+            queryset = User.objects.filter(
+                username=request.data.get('username'))
+        serializers = UserSerializer(queryset, many=True)
+
+        return Response(serializers.data, status=status.HTTP_200_OK)

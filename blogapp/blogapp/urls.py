@@ -23,8 +23,9 @@ router.register('blogs', views.BlogPostApi, basename="api")
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/', views.UserView.as_view()),
+    path('userget/', views.UserGet.as_view()),
     path('gettoken/', TokenObtainPairView.as_view()),
     path('refreshtoken/', TokenRefreshView.as_view()),
-    path('verfiytoken/', TokenVerifyView.as_view()),
+    path('verifytoken/', TokenVerifyView.as_view()),
     path('', include(router.urls)),
 ]
